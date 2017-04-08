@@ -1,10 +1,13 @@
-from scapy.all import *
+#!/usr/bin/env python
+# --*--coding: utf-8 --*--
 
-httpPort = 80
+from scapy.all import *
+from logger import logger
+
+HTTP_PORT = 80
 reqUrlsFile = open('req-urls.txt', 'w+')
 
 class HttpRequestCapture:
-
     def __init__(self):
         self.httpLoad = ''
         self.httpFragged = False
@@ -13,13 +16,10 @@ class HttpRequestCapture:
     def parser(self, pkt):
         if not pkt.haslayer(Raw):
             return
-        elif not httpPort in [pkt[TCP].sport, pkt[TCP].dport]:
+        elif not HTTP_PORT in [pkt[TCP].sport, pkt[TCP].dport]:
             return
 
-        load = pkt[Raw].load
-        ack = pkt[IP].ack
-
-        self.parseHttp(load, ack)
+        self.parseHttp(pkt[Raw].load, pkt[IP].ack)
 
     def parseHttp(self, load, ack):
         if ack == self.httpPack:
@@ -36,7 +36,7 @@ class HttpRequestCapture:
             headerLines = headerLines.split('\r\n')
         except Exception:
             headerLines = load.split('\r\n')
-            contentLines = ""
+            contentLines = ''
 
         httpReqUrl = self.getHttpReqUrl(headerLines)
 
@@ -45,20 +45,20 @@ class HttpRequestCapture:
             self.saveReqUrl(httpReqUrl);
 
     def getHttpReqUrl(self, headerLines):
-        httpReqUrl = ''
+        host = ''
         httpReqUri = ''
         httpMethod  = headerLines[0][0:headerLines[0].find("/")].strip()
 
         if httpMethod != 'GET':
             return
 
-        httpReqUrl = self.getHost(headerLines)
+        host = self.getHost(headerLines)
 
         for line in headerLines:
             if 'GET /' in line:
                 httpReqUri = line.split('GET ')[1].split(' HTTP/')[0].strip()
 
-        return ''.join([httpReqUrl, httpReqUri])
+        return ''.join([host, httpReqUri])
 
     def getHost(self, headerLines):
         host = ''
@@ -71,18 +71,11 @@ class HttpRequestCapture:
     def saveReqUrl(self, reqUrl):
         reqUrlsFile.write(reqUrl+'\n')
 
-def logger(title, content):
-    w = '\033[0m'
-    g = '\033[32m'
-    print(g + title + w + content)
-
 if __name__ == "__main__":
-    print('Start Capture Reqest')
-
     httpRequestCapture = HttpRequestCapture()
-
     try:
-        sniff(prn=httpRequestCapture.parser, iface='en0', filter='tcp');
+        logger('HTTP REQUEST CAPTURE STARTED')
+        sniff(prn=httpRequestCapture.parser, filter='tcp', iface='en0')
     except KeyboardInterrupt:
         reqUrlsFile.close( )
         exit()
