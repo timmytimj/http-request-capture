@@ -3,6 +3,7 @@
 
 from scapy.all import *
 from logger import logger
+import time
 
 HTTP_PORT = 80
 reqUrlsFile = open('req-urls.txt', 'w+')
@@ -41,7 +42,7 @@ class HttpRequestCapture:
         httpReqUrl = self.getHttpReqUrl(headerLines)
 
         if httpReqUrl:
-            logger('Http Req Url: ', httpReqUrl)
+            logger(time.strftime('%a, %d %b %Y %H:%M:%S %z: '), httpReqUrl)
             self.saveReqUrl(httpReqUrl);
 
     def getHttpReqUrl(self, headerLines):
