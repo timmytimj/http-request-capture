@@ -1,3 +1,7 @@
 ## Http Request Capture written in Python
 
-<img src="https://raw.githubusercontent.com/jacklam718/http-request-capture/master/.github/screenshot.png" width="300" />
+##### http made from browser
+<img src="https://raw.githubusercontent.com/jacklam718/http-request-capture/master/.github/request-made-from-browser.png" width="300" />
+
+##### capture http request
+<img src="https://raw.githubusercontent.com/jacklam718/http-request-capture/master/.github/capture-http-request.png" width="300" />
