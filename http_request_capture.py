@@ -6,7 +6,7 @@ from scapy.all import TCP, IP, sniff, Raw
 from logger import logger
 
 HTTP_PORT = 80
-REQ_URLS_FILE = open('req-urls.txt', 'w+')
+REQ_URLS_FILE = open('req-urls.txt', 'w')
 
 class HttpRequestCapture(object):
     '''HttpRequestCapture class'''
